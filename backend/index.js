@@ -1,19 +1,23 @@
+const { db } = require("./db");
+
+const cors = require("cors");
 const express = require("express");
-const bodyParser = require("body-parser");
+const { services } = require("./services");
+
 const app = express();
-const port = 3000;
 
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
+// middleware for json parsing
+app.use(express.json());
 
-app.get("/", (request, response) => {
-  response.json({ info: "Node.js, Express, and Postgres API" });
+db.sequelize.sync({ force: true }).then(() => {
+  console.log("Drop and re-sync db.");
 });
 
-app.listen(port, () => {
-  console.log(`App running on port ${port}.`);
-});
+// middleware for allow cross origin request
+app.use(cors());
+
+app.use("/api", services);
+
+const port = process.env.PORT || 3001;
+
+app.listen(port, () => console.log(`server is running on :${port}`));
