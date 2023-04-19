@@ -1,4 +1,4 @@
-const { Sequelize, INTEGER, STRING } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const config = require("./db.config");
 
 const User = require("./models/user");
@@ -26,7 +26,5 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelizeInstance;
 
 db.users = User(sequelizeInstance, Sequelize);
-
-// module.exports = db;
 
 module.exports = { db };

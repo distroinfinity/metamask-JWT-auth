@@ -25,9 +25,8 @@ function App() {
     }
   }
   async function checkAuth(){
-    
-  }
 
+  }
 
   useEffect(() => {
     getAccount();
@@ -84,7 +83,7 @@ function App() {
         `http://localhost:3001/api/users?publicAddress=${account}`
       );
       const users = await userResponse.json();
-      console.log("checing user exists", users);
+      console.log("checking user exists", users);
 
       // If yes, retrieve it. If no, create it.
       const user = users.length ? users[0] : await handleSignup();

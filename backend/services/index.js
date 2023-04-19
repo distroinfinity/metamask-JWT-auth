@@ -1,9 +1,7 @@
 const express = require("express");
 
-const { authRouter } = require("./auth/authRoutes");
-const { userRouter } = require("./users/usersRoutes");
-
-// console.log("testing", authRouter, userRouter)
+const { authRouter } = require("./auth/routes");
+const { userRouter } = require("./users/routes");
 
 const services = express.Router();
 

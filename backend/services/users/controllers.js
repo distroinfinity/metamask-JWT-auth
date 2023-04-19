@@ -1,16 +1,20 @@
-const { db } = require("./../../db");
+const { db } = require("../../db");
 
 const User = db.users;
 
-// const User = require("../../models/user");
+const create = (req, res, next) => {
+  console.log("user body", req.body, typeof req.body);
+
+  User.create(req.body)
+    .then((user) => res.json(user))
+    .catch(next);
+};
 
 const find = async (req, res, next) => {
   const whereClause =
     req.query && req.query.publicAddress
       ? { where: { publicAddress: req.query.publicAddress } }
       : undefined;
-
-  // console.log("testing user object", User);
 
   return await User.findAll(whereClause)
     .then((users) => res.json(users))
@@ -22,14 +26,6 @@ const get = (req, res, next) => {
     return res.status(401).send({ error: "You can can only access yourself" });
   }
   return User.findByPk(req.params.userId)
-    .then((user) => res.json(user))
-    .catch(next);
-};
-
-const create = (req, res, next) => {
-  console.log("user body", req.body, typeof req.body);
-
-  User.create(req.body)
     .then((user) => res.json(user))
     .catch(next);
 };

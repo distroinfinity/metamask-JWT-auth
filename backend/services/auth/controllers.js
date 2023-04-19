@@ -1,13 +1,11 @@
 const { recoverPersonalSignature } = require("eth-sig-util");
-
 const { bufferToHex } = require("ethereumjs-util");
-// const { User } = require("../../models/user");
-const { db } = require("./../../db");
+const { db } = require("../../db");
 
 const User = db.users;
 
 const jwt = require("jsonwebtoken");
-const config = require("./../../db.config");
+const config = require("../../db.config");
 
 const login = async (req, res, next) => {
   const { signature, publicAddress } = req.body;
@@ -21,11 +19,8 @@ const login = async (req, res, next) => {
   const user = new User();
   const userExists = await User.findOne({ where: { publicAddress } });
 
-  // console.log("testing if user exists", userExists);
-
   if (!userExists) {
     user.nonce = Math.floor(Math.random() * 10000);
-    // console.log("reached here", user);
     return user.save();
   } else {
     // if user exists then verify user signature
@@ -39,7 +34,7 @@ const login = async (req, res, next) => {
     //match stored address with address found after verify signature
 
     if (address.toLowerCase() === publicAddress.toLowerCase()) {
-      //create jwt token
+      //create jwt token on successfull verification
       const token = jwt.sign(
         {
           payload: {
