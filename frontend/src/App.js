@@ -3,10 +3,12 @@ import { Button } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 
+const TokenKey = "cachedJWTAuthToken";
+
 function App() {
   // get user account address
   const [account, setAccount] = useState("");
-  const [token, setToken] = useState(null);
+  const [auth, setAuth] = useState({ auth: null });
 
   async function getAccount() {
     // Check if Web3 is injected by the browser (MetaMask)
@@ -24,8 +26,13 @@ function App() {
       console.log("Please install MetaMask!");
     }
   }
-  async function checkAuth(){
 
+  async function checkAuth() {
+    // check if Access token is stored in localstorage
+    const ls = window.localStorage.getItem(TokenKey);
+    const auth = ls && JSON.parse(ls);
+    console.log("local auth", auth);
+    setAuth({ auth });
   }
 
   useEffect(() => {
@@ -76,7 +83,7 @@ function App() {
     return data;
   }
 
-  async function handleLogin() {
+  async function login() {
     // check if already present in the backend
     try {
       const userResponse = await fetch(
@@ -93,10 +100,17 @@ function App() {
       // Send signature to backend on the /auth route
       const accessToken = await handleAuthenticate(signedMessage);
       console.log("access token fetched", accessToken);
-      setToken(accessToken.accessToken); // save it in localStorage
+      // setToken(accessToken.accessToken); // save it in localStorage
+      localStorage.setItem(TokenKey, JSON.stringify(accessToken.accessToken));
+      setAuth({ auth });
     } catch (error) {
       window.alert(error);
     }
+  }
+
+  async function logOut() {
+    localStorage.removeItem(TokenKey);
+    setAuth({ auth: undefined });
   }
 
   return (
@@ -104,11 +118,21 @@ function App() {
       <header className="App-header">
         <p>Injected wallet address {account}</p>
         <div>
-          <Button colorScheme="blue" onClick={handleLogin}>
-            Login with metamask
-          </Button>
+          {auth.auth ? (
+            <>
+              <Button colorScheme="blue" onClick={logOut}>
+                Logout
+              </Button>
+              <p>Successfully logged in!</p>
+            </>
+          ) : (
+            <>
+              <Button colorScheme="blue" onClick={login}>
+                Login with metamask
+              </Button>
+            </>
+          )}
         </div>
-        {token && <p>Logged in with this accessToken: {token}</p>}
       </header>
     </div>
   );
