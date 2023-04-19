@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import Web3 from "web3";
 
 const TokenKey = "cachedJWTAuthToken";
+const BASEURL = "http://localhost:3001/api";
 
 function App() {
   // get user account address
   const [account, setAccount] = useState("");
   const [auth, setAuth] = useState({ auth: null });
+  const [user, setUser] = useState({ user: null });
 
   async function getAccount() {
     // Check if Web3 is injected by the browser (MetaMask)
@@ -42,7 +44,7 @@ function App() {
 
   async function handleSignup() {
     console.log("user does not exist");
-    const response = await fetch(`http://localhost:3001/api/users`, {
+    const response = await fetch(`${BASEURL}/users`, {
       body: JSON.stringify({ publicAddress: account.toLowerCase() }),
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +56,7 @@ function App() {
     return data;
   }
   const handleSignMessage = async (user) => {
-    console.log("user signing is", user);
+    setUser({ user });
     const { publicAddress, nonce } = user;
     const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
 
@@ -72,7 +74,7 @@ function App() {
   };
 
   async function handleAuthenticate({ publicAddress, signature }) {
-    const response = await fetch(`http://localhost:3001/api/auth`, {
+    const response = await fetch(`${BASEURL}/auth`, {
       body: JSON.stringify({ publicAddress, signature }),
       headers: {
         "Content-Type": "application/json",
@@ -83,18 +85,21 @@ function App() {
     return data;
   }
 
+  async function getUser() {
+    const userResponse = await fetch(
+      `${BASEURL}/users?publicAddress=${account}`
+    );
+    const users = await userResponse.json();
+    console.log("checking user exists", users);
+    return users;
+  }
+
   async function login() {
     // check if already present in the backend
     try {
-      const userResponse = await fetch(
-        `http://localhost:3001/api/users?publicAddress=${account}`
-      );
-      const users = await userResponse.json();
-      console.log("checking user exists", users);
-
+      const users = await getUser();
       // If yes, retrieve it. If no, create it.
       const user = users.length ? users[0] : await handleSignup();
-
       // Popup MetaMask confirmation modal to sign message
       const signedMessage = await handleSignMessage(user);
       // Send signature to backend on the /auth route
@@ -111,6 +116,7 @@ function App() {
   async function logOut() {
     localStorage.removeItem(TokenKey);
     setAuth({ auth: undefined });
+    setUser({ user: null });
   }
 
   return (
@@ -124,6 +130,16 @@ function App() {
                 Logout
               </Button>
               <p>Successfully logged in!</p>
+              {!user.user ? (
+                ""
+              ) : (
+                <>
+                  <p>id: {user?.user.id}</p>
+                  <p>nonce: {user?.user.nonce}</p>
+                  <p>publicAddress: {user?.user.publicAddress}</p>
+                  <p>updated at: {user?.user.updatedAt} </p>
+                </>
+              )}
             </>
           ) : (
             <>
