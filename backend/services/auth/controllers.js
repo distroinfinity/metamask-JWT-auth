@@ -23,13 +23,17 @@ const login = async (req, res, next) => {
     user.nonce = Math.floor(Math.random() * 10000);
     return user.save();
   } else {
+
     // if user exists then verify user signature
     const msg = `nonce: ${userExists.nonce}`;
+
     const msgBufferHex = bufferToHex(Buffer.from(msg, "utf8"));
+    
     const address = recoverPersonalSignature({
       data: msgBufferHex,
       sig: signature,
     });
+
     console.log("address", address);
     //match stored address with address found after verify signature
 

@@ -95,16 +95,17 @@ function App() {
   }
 
   async function login() {
-    // check if already present in the backend
     try {
+      // check if already present in the backend
       const users = await getUser();
-      // If yes, retrieve it. If no, create it.
+      // fetch if present else create it.
       const user = users.length ? users[0] : await handleSignup();
-      // Popup MetaMask confirmation modal to sign message
+      // sign message
       const signedMessage = await handleSignMessage(user);
-      // Send signature to backend on the /auth route
+      // Send signature to /auth route
       const accessToken = await handleAuthenticate(signedMessage);
       console.log("access token fetched", accessToken);
+      
       // setToken(accessToken.accessToken); // save it in localStorage
       localStorage.setItem(TokenKey, JSON.stringify(accessToken.accessToken));
       setAuth({ auth });
