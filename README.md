@@ -3,7 +3,7 @@
 This repo contains the authentication flow for metamask and nodejs and postgresql.
 
 Backend is divided into two services:
-1. Authentication Service - Responsing for creating JWT Tokens
+1. Authentication Service - Responsible for creating JWT Tokens
 2. User Service - Reading writing to DB for user Tables
 
 Video with final output - https://drive.google.com/file/d/1Ks9XDPJtWlBOUiHZ_X-Df6ZFvLqLDK8B/view?usp=share_link
