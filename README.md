@@ -1,4 +1,4 @@
-# xborg-task
+# METAMASK JWT Auth
 
 This repo contains the authentication flow for metamask and nodejs and postgresql.
 
